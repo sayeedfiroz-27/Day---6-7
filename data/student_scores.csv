@@ -1,0 +1,7 @@
+student_id,name,gender,math_score,english_score,science_score,study_hours,attendance,result
+1,Aman,Male,78,82,80,4,88,Pass
+2,Neha,Female,92,89,94,6,95,Pass
+3,Rahul,Male,45,50,48,2,62,Pass
+4,Ayesha,Female,88,,90,5,91,Pass
+5,Karan,Male,35,40,38,1,55,Fail
+6,Priya,Female,76,72,75,3,84,Pass
