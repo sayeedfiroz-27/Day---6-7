@@ -667,3 +667,166 @@ Ab Day 7 ke sab topics ko ek real project flow me connect karte hain. Suppose hu
 Step 1: Dataset load karenge using Pandas. Step 2: `head()` se first rows dekhenge. Step 3: `shape` se rows and columns count karenge. Step 4: `isnull().sum()` se missing values check karenge. Step 5: missing English marks fill karenge. Step 6: total score and percentage columns create karenge. Step 7: useful features select karenge. Step 8: target column select karenge. Step 9: train-test split karenge. Step 10: next class me model training ke liye data ready hoga.
 
 Is flow se students ko samajh aata hai ki NumPy aur Pandas sirf libraries nahi, balki ML project ka foundation hain. Data preprocessing ke bina Machine Learning project start nahi hota.
+
+---
+
+# Complete Practical Project - Student Performance Data Preprocessing
+
+Ab hum Day 7 ka complete practical project dekhenge. Is practical me hum ek student performance dataset use karenge. Aap class me pehle students ko dataset ka meaning samjhao, phir code run karo, phir har line explain karo. Ye practical Machine Learning model training se pehle ka complete preprocessing flow dikhata hai.
+
+## Dataset Used
+
+Is class practical me local sample dataset use hoga:
+
+`data/student_scores.csv`
+
+Is dataset me following columns hain:
+
+| Column | Meaning |
+|---|---|
+| `student_id` | Student ka unique ID |
+| `name` | Student ka naam |
+| `gender` | Student gender |
+| `math_score` | Math subject marks |
+| `english_score` | English subject marks, isme ek missing value hai |
+| `science_score` | Science subject marks |
+| `study_hours` | Student daily study hours |
+| `attendance` | Attendance percentage |
+| `result` | Final result, Pass ya Fail |
+
+Real-world Kaggle practice ke liye aap ye dataset use kar sakte ho:
+
+Students Performance in Exams: https://www.kaggle.com/datasets/spscientist/students-performance-in-exams
+
+Classroom explanation: "Hum local CSV se practice kar rahe hain taaki code easily run ho jaaye. Real-world me same Pandas commands Kaggle ke CSV dataset par bhi apply honge. Dataset badal sakta hai, but process same rahega: load, inspect, clean, feature select, split."
+
+## Full Practical Code
+
+```python
+import pandas as pd
+import numpy as np
+
+marks = np.array([78, 92, 45, 88, 35])
+
+print("NumPy Array:", marks)
+print("Average Marks:", np.mean(marks))
+print("Highest Marks:", np.max(marks))
+print("Marks After Bonus:", marks + 5)
+
+df = pd.read_csv("data/student_scores.csv")
+
+print("\nFirst 5 Rows")
+print(df.head())
+
+print("\nMissing Values Before Cleaning")
+print(df.isnull().sum())
+
+df["english_score"] = df["english_score"].fillna(df["english_score"].mean())
+
+df["total_score"] = df["math_score"] + df["english_score"] + df["science_score"]
+df["percentage"] = (df["total_score"] / 300) * 100
+
+features = df[["math_score", "english_score", "science_score", "study_hours", "attendance"]]
+target = df["result"]
+
+train_data = df.sample(frac=0.8, random_state=42)
+test_data = df.drop(train_data.index)
+
+X_train = train_data[["math_score", "english_score", "science_score", "study_hours", "attendance"]]
+y_train = train_data["result"]
+
+X_test = test_data[["math_score", "english_score", "science_score", "study_hours", "attendance"]]
+y_test = test_data["result"]
+
+print("\nCleaned Student Scores")
+print(df[["name", "total_score", "percentage", "result"]])
+
+print("\nSelected Features")
+print(features.head())
+
+print("\nTarget")
+print(target.head())
+
+print("\nTrain Test Split")
+print("Training rows:", X_train.shape[0])
+print("Testing rows:", X_test.shape[0])
+print("Training target values:")
+print(y_train)
+print("Testing target values:")
+print(y_test)
+```
+
+## Expected Output
+
+```text
+NumPy Array: [78 92 45 88 35]
+Average Marks: 67.6
+Highest Marks: 92
+Marks After Bonus: [83 97 50 93 40]
+
+First 5 Rows
+   student_id    name  gender  ...  study_hours  attendance  result
+0           1    Aman    Male  ...            4          88    Pass
+1           2    Neha  Female  ...            6          95    Pass
+2           3   Rahul    Male  ...            2          62    Pass
+3           4  Ayesha  Female  ...            5          91    Pass
+4           5   Karan    Male  ...            1          55    Fail
+
+Missing Values Before Cleaning
+english_score    1
+
+Cleaned Student Scores
+     name  total_score  percentage result
+0    Aman        240.0   80.000000   Pass
+1    Neha        275.0   91.666667   Pass
+2   Rahul        143.0   47.666667   Pass
+3  Ayesha        244.6   81.533333   Pass
+4   Karan        113.0   37.666667   Fail
+5   Priya        223.0   74.333333   Pass
+
+Train Test Split
+Training rows: 5
+Testing rows: 1
+```
+
+Note: Pandas output terminal width ke according thoda compact ya expanded dikh sakta hai. Set ka order ya DataFrame display formatting slightly different ho sakti hai, but values same rahengi.
+
+## Detailed Code Explanation
+
+| Line | Code | Explanation |
+|---|---|---|
+| 1 | `import pandas as pd` | Is line me Pandas library import ho rahi hai. Pandas tabular data handle karne ke liye use hoti hai. `as pd` ek alias hai, matlab hum full `pandas` likhne ke bajay short name `pd` use karenge. Data Science community me ye standard style hai. |
+| 2 | `import numpy as np` | Is line me NumPy library import ho rahi hai. NumPy numerical calculations ke liye use hoti hai. `as np` short alias hai. Marks, arrays, mean, max, and mathematical operations me NumPy helpful hoti hai. |
+| 4 | `marks = np.array([78, 92, 45, 88, 35])` | Yahan Python list ko NumPy array me convert kiya gaya hai. `np.array()` numerical values ko array format me store karta hai. Ye marks sample data hai jisse students ko NumPy operations samjhaye ja sakte hain. |
+| 6 | `print("NumPy Array:", marks)` | Ye line complete NumPy array print karti hai. Label `"NumPy Array:"` output ko readable banata hai. |
+| 7 | `print("Average Marks:", np.mean(marks))` | `np.mean()` array ke values ka average calculate karta hai. Average class performance samajhne ke liye useful hota hai. |
+| 8 | `print("Highest Marks:", np.max(marks))` | `np.max()` highest value find karta hai. Student marks context me ye topper score identify kar sakta hai. |
+| 9 | `print("Marks After Bonus:", marks + 5)` | `marks + 5` vectorized operation hai. Iska matlab array ke har element me 5 add hoga. Loop likhne ki zaroorat nahi padti. |
+| 11 | `df = pd.read_csv("data/student_scores.csv")` | `pd.read_csv()` CSV file ko read karta hai aur DataFrame me convert karta hai. `df` ka matlab DataFrame variable hai. `"data/student_scores.csv"` dataset ka path hai. |
+| 13 | `print("\nFirst 5 Rows")` | `\n` output me blank line add karta hai. Ye heading print hoti hai taaki next output ka purpose clear rahe. |
+| 14 | `print(df.head())` | `df.head()` DataFrame ki first 5 rows show karta hai. Data load hone ke baad first check ye hota hai ki data sahi read hua ya nahi. |
+| 16 | `print("\nMissing Values Before Cleaning")` | Ye heading batati hai ki ab missing values check hone wali hain. Data cleaning se pehle missing values identify karna zaroori hota hai. |
+| 17 | `print(df.isnull().sum())` | `isnull()` har cell me missing value check karta hai. `sum()` har column me total missing values count karta hai. Isse hume pata chalta hai kaunse column me cleaning chahiye. |
+| 19 | `df["english_score"] = df["english_score"].fillna(df["english_score"].mean())` | Is line me `english_score` column ki missing value fill hoti hai. `df["english_score"].mean()` English marks ka average calculate karta hai. `fillna()` missing value ko average se replace karta hai. Left side assignment updated column ko DataFrame me save karta hai. |
+| 21 | `df["total_score"] = df["math_score"] + df["english_score"] + df["science_score"]` | Ye line new column `total_score` create karti hai. Math, English, and Science marks add hote hain. Feature engineering ka ye simple example hai because hum existing columns se new useful column bana rahe hain. |
+| 22 | `df["percentage"] = (df["total_score"] / 300) * 100` | Ye line total score se percentage calculate karti hai. 300 maximum marks assume kiye gaye hain because three subjects hain and each 100 marks ka hai. Parentheses formula ko clear banate hain. |
+| 24 | `features = df[["math_score", "english_score", "science_score", "study_hours", "attendance"]]` | `features` input columns ka DataFrame hai. Double square brackets ka use multiple columns select karne ke liye hota hai. Ye columns model ko result predict karne me help kar sakte hain. |
+| 25 | `target = df["result"]` | `target` output column hai. Machine Learning me target wo value hoti hai jisko model predict karega. Yahan target Pass/Fail result hai. |
+| 27 | `train_data = df.sample(frac=0.8, random_state=42)` | `sample()` DataFrame se random rows select karta hai. `frac=0.8` ka matlab 80 percent data training ke liye lena. `random_state=42` split ko repeatable banata hai, taaki har run me same rows select hon. |
+| 28 | `test_data = df.drop(train_data.index)` | Training rows remove karke jo rows bachti hain wo testing data ban jaati hain. `train_data.index` selected training rows ke row numbers deta hai. `drop()` un rows ko original DataFrame se hata deta hai. |
+| 30 | `X_train = train_data[[...]]` | `X_train` training input features hain. Model in columns se learn karega. `X` usually features ke liye common variable name hai. |
+| 31 | `y_train = train_data["result"]` | `y_train` training target values hain. `y` usually target/output ke liye use hota hai. |
+| 33 | `X_test = test_data[[...]]` | `X_test` testing input features hain. Ye unseen data jaisa behave karta hai. |
+| 34 | `y_test = test_data["result"]` | `y_test` testing target values hain. Model prediction ko compare karne ke liye actual answers chahiye hote hain. |
+| 36-37 | `print(...)` | Ye lines cleaned student scores heading aur selected columns print karti hain. Isse student ko total and percentage calculation ka final result dikhta hai. |
+| 39-40 | `print(...)` | Ye selected features print karti hain. Students ko clear hota hai ki model ko kaunse input columns milenge. |
+| 42-43 | `print(...)` | Ye target values print karti hain. Students ko clear hota hai ki model ka output Pass/Fail hoga. |
+| 45-51 | `print(...)` | Ye train-test split ka summary print karti hain. Training rows aur testing rows count dikhte hain, aur target values bhi visible hoti hain. |
+
+## Keyword Explanation
+
+`DataFrame` table-like structure hota hai. `Series` single-column structure hota hai. `read_csv()` CSV file load karta hai. `head()` first rows show karta hai. `isnull()` missing values check karta hai. `sum()` counts add karta hai. `mean()` average calculate karta hai. `fillna()` missing values fill karta hai. `sample()` random rows select karta hai. `drop()` selected rows or columns remove karta hai. `shape[0]` rows count return karta hai.
+
+## Real-world Connection
+
+Same process Kaggle ke real dataset par apply hota hai. Agar aap Students Performance in Exams dataset download karte ho, to pehle CSV load karoge, missing values check karoge, score columns analyze karoge, useful features choose karoge, aur target decide karoge. Agar target `pass/fail` nahi diya hai, to percentage ke basis par target create bhi kar sakte ho. Ye practical Day 8 ya next ML model training class ke liye foundation banata hai.
